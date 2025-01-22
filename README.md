@@ -54,7 +54,7 @@ Logs in a user to the Szkopul platform by saving credentials locally for future 
 #### Arguments
 - `username` *(str, optional)*: Your Szkopul username.
 - `password` *(str, optional)*: Your Szkopul password.
-- `rootLink` *(str, optional)*: The root URL of the Szkopul platform.
+- `rootLink` *(str, optional)*: The root URL of the chosen contest on Szkopul platform.
 
 #### Usage
 ```bash
