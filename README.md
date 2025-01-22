@@ -154,8 +154,8 @@ Fetches and displays a list of tasks from Szkopul. Can filter tasks based on com
 
 #### Arguments
 - `--only_not_completed` *(bool, optional)*: Fetches only tasks that are not completed.
-- `--subUrl` *(str, optional)*: Filters for a specific subtask by its URL.
-- `--taskUrl` *(str, optional)*: Filters for a specific task by its URL.
+- `--subUrl` *(str, optional)*: Filters for a specific subtask by its short name.
+- `--taskUrl` *(str, optional)*: Filters for a specific task by its short name.
 
 #### Usage
 ```bash
@@ -180,7 +180,7 @@ $ python main.py get_tasks --only_not_completed
 
 Filter a specific task:
 ```bash
-$ python main.py get_tasks --taskUrl https://szkopul.edu.pl/task/url/101
+$ python main.py get_tasks --taskUrl ant 
 ```
 
 ---
