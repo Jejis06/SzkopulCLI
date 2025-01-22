@@ -207,5 +207,4 @@ $ python main.py submit --subUrl https://szkopul.edu.pl/task/123 --file solution
 ---
 
 ## License
-
-This project is licensed under the terms of the MIT License.
+Prawnikiem nie jestem wiec kod moj jest kodem twoim
