@@ -1,7 +1,7 @@
 
 # Szkopul Command-Line Tool
 
-This is a Python-based CLI tool for interacting with the [Szkopul](https://szkopul.edu.pl/c/plockie-treningi-olimpijskie/p/) platform. The tool provides various commands to manage credentials, fetch rankings, view tasks, submissions, and handle errors.
+This is a Python-based CLI tool for interacting with the [Szkopul](https://szkopul.edu.pl) platform. The tool provides various commands to manage credentials, fetch rankings, view tasks, submissions, and handle errors.
 
 ## Table of Contents
 
