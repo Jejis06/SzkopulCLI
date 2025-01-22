@@ -154,8 +154,8 @@ Fetches and displays a list of tasks from Szkopul. Can filter tasks based on com
 
 #### Arguments
 - `--only_not_completed` *(bool, optional)*: Fetches only tasks that are not completed.
-- `--subUrl` *(str, optional)*: Filters for a specific subtask by its short name.
-- `--taskUrl` *(str, optional)*: Filters for a specific task by its short name.
+- `--subUrl` *(str, optional)*: Filters for a specific submission url of task by its short name.
+- `--taskUrl` *(str, optional)*: Filters for a specific task url by its short name.
 
 #### Usage
 ```bash
