@@ -11,13 +11,27 @@ tabletheme.horizontal_char = "─"
 creds_file = "creds.save"
 
 def look_for_credentials():
+    """
+    Search for a credentials file within a maximum directory traversal depth.
+
+    This function attempts to locate a credentials file starting from the current
+    working directory. It initially checks if the file exists in the current directory.
+    If not found, it traverses up to a specified maximum number of parent directories.
+
+    :raises FileNotFoundError: If the system cannot access a directory path or file.
+    :raises IOError: In case of I/O errors when interacting with the file system.
+
+    :return: The relative path to the credentials file if found, or ``None`` if no
+        credentials file is located within the search depth.
+    :rtype: str or None
+    """
     max_depth = 4
     if os.path.exists(f"./{creds_file}"):
         return f"./{creds_file}"
     for i in range(max_depth):
         upper = '../' * i
         if os.path.exists(f"{upper}/{creds_file}"):
-            return f"../{creds_file}"
+            return f"{upper}/{creds_file}"
     return None
 
 def create_file(filename):
@@ -48,7 +62,13 @@ def get_credentials():
 @arguably.command
 def whoami():
     """
-    returns who is the active logged in usern
+    Provides a command to display the username of the currently logged-in user.
+    If the username is not found in the credentials, it prompts the user to log in.
+
+    :return: None
+    :rtype: NoneType
+
+    :raises KeyError: If the "username" key does not exist in the credentials dictionary.
     """
     creds = get_credentials()
     if "username" in creds:
@@ -59,7 +79,18 @@ def whoami():
 @arguably.command
 def login(username : str | None = None, password : str | None = None, rootLink : str | None = None):
     """
-    logins the user, takes credentials such as username, password, contesturl and creates persistant session file
+    Logs in a user to the application with provided credentials and saves the credentials 
+    locally for future use. This function initializes a client with provided username, 
+    password, and link, attempts the login process, and saves the credentials to a file.
+
+    If the login attempt fails due to incorrect credentials or other reasons, an error 
+    message will be printed. This function ensures credentials persistence by storing them 
+    locally once login is successful.
+
+    :param username: The username for the login credentials.
+    :param password: The password associated with the username.
+    :param rootLink: The root link or URL associated with the application for login.
+    :return: None
     """
     creds_path = get_credentials_path()
     creds = {
@@ -80,8 +111,11 @@ def login(username : str | None = None, password : str | None = None, rootLink :
 @arguably.command
 def ranking():
     """
-    returns ranking of all users in current chosen contest
-    :return:
+    Retrieves the user credentials and fetches the ranking information from a client service. The command logs into
+    the client using provided credentials and retrieves the ranking data sorted by points in descending order. 
+    A formatted table is displayed to present the ranking information.
+
+    :raises Exception: If login to client fails or ranking data retrieval is unsuccessful.
     """
     creds = get_credentials()
     client = SkClient(login=creds["username"], password=creds["password"], url=creds["link"])
@@ -103,8 +137,19 @@ def ranking():
 @arguably.command
 def latest_sub(*, url: bool = False, points: bool = False):
     """
-    returns latest submission for chosen contest
-    :return:
+    Provides a command for checking and displaying the latest submission of a user from a specific client.
+
+    This function communicates with a client instance using the provided credentials to retrieve the last submission
+    information. It has optional parameters to display specific attributes of the submission, such as the submission URL 
+    or points. If none of the options are specified, a formatted table displaying the comprehensive details of the latest 
+    submission is printed.
+
+    :param url: If set to True, prints the URL of the latest submission.
+    :type url: bool
+    :param points: If set to True, prints the points of the latest submission.
+    :type points: bool
+    :return: None. Outputs are printed directly to the console depending on user input.
+    :rtype: None
     """
     creds = get_credentials()
     client = SkClient(login=creds["username"], password=creds["password"], url=creds["link"])
@@ -127,11 +172,16 @@ def latest_sub(*, url: bool = False, points: bool = False):
 
 @arguably.command
 def errors(subUrl : str):
-    '''
-    returns a list of errors for chosen submission
-    :param subUrl:
-    :return:
-    '''
+    """
+    Checks errors on a specified sub-url using a client API and displays the results
+    in a formatted table. This function handles login and errors gracefully and provides
+    feedback to the user in case of failures.
+
+    :param subUrl: The sub-url for which to check errors.
+    :type subUrl: str
+    :return: None
+    :rtype: None
+    """
     creds = get_credentials()
     client = SkClient(login=creds["username"], password=creds["password"], url=creds["link"])
 
@@ -155,11 +205,16 @@ def errors(subUrl : str):
 
 @arguably.command
 def get_tasks(*, only_not_completed:bool = False, subUrl:str | None = None , taskUrl:str | None=None):
-    '''
-    returns list of tasks from a given contest
-    :param only_not_completed:
-    :return:
-    '''
+    """
+    Fetches and displays tasks from a server using the provided filtering criteria. Optionally,
+    can filter tasks based on associated subtask name or specific task URL. If no filters are provided,
+    all tasks are processed and displayed in a formatted table.
+
+    :param only_not_completed: If set to True, only fetches tasks that are not completed.
+    :param subUrl: A string used to filter a specific subtask by its URL, if provided.
+    :param taskUrl: A string used to filter a specific task by its URL, if provided.
+    :return: None. Outputs the requested tasks or corresponding messages to the console.
+    """
     creds = get_credentials()
     client = SkClient(login=creds["username"], password=creds["password"], url=creds["link"])
 
@@ -198,12 +253,20 @@ def get_tasks(*, only_not_completed:bool = False, subUrl:str | None = None , tas
 
 @arguably.command
 def submit(subUrl: str, file: str, filetype: str):
-    '''
-    :param: subUrl - link do wysłania zadania na szkopule (jeden z elementow zwrotu zadan)
-    :param: file - plik do wyslania
-    :param: filetype - typ pliku do wyboru : C, C++ , Pascal , python
-    :return:
-    '''
+    """
+    Submit a file for processing on the specified submission URL with the given filetype. The command
+    ensures that the correct filetype is provided, authenticates the user using stored credentials, and 
+    attempts to submit the file to the external system using a client.
+
+    If the filetype is invalid, an exception will be raised immediately. The function handles login 
+    failures, submission errors, and response code validation to properly report issues during the 
+    process. Authentication credentials must be pre-configured for successful execution.
+
+    :param subUrl: A string representing the submission URL where the file will be submitted.
+    :param file: A string representing the full path to the file to be submitted.
+    :param filetype: A string representing the type of the file, must be one of: "C", "C++", "Pascal", "python".
+    :return: None.
+    """
     if filetype not in ["C", "C++", "Pascal", "python"]:
         raise Exception("Wrong filetype selected, please choose one of : C, C++, Pascal, python")
 
